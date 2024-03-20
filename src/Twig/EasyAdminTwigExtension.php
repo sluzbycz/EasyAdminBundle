@@ -451,13 +451,13 @@ class EasyAdminTwigExtension extends AbstractExtension
     public function getLogoutPath()
     {
         if (null === $this->logoutUrlGenerator) {
-            return;
+            return null;
         }
 
         try {
             return $this->logoutUrlGenerator->getLogoutPath();
         } catch (\Exception $e) {
-            return;
+            return null;
         }
     }
 
