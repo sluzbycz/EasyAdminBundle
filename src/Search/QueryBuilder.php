@@ -2,10 +2,8 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Search;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\QueryBuilder as DoctrineQueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -128,21 +126,23 @@ class QueryBuilder
             ) {
                 $queryBuilder->orWhere(sprintf('%s.%s = :numeric_query', $entityName, $fieldName));
                 // adding '0' turns the string into a numeric value
-                $queryParameters[] = new Parameter('numeric_query', (int) $searchQuery);
+                $queryParameters['numeric_query'] = 0 + $searchQuery;
             } elseif ($isGuidField && $isSearchQueryUuid) {
                 $queryBuilder->orWhere(sprintf('%s.%s = :uuid_query', $entityName, $fieldName));
-                $queryParameters[] = new Parameter('uuid_query', $searchQuery);
+                $queryParameters['uuid_query'] = $searchQuery;
             } elseif ($isTextField) {
                 $queryBuilder->orWhere(sprintf('LOWER(%s.%s) LIKE :fuzzy_query', $entityName, $fieldName));
-                $queryParameters[] = new Parameter('fuzzy_query', '%'.$lowerSearchQuery.'%');
+                $queryParameters['fuzzy_query'] = '%'.$lowerSearchQuery.'%';
 
                 $queryBuilder->orWhere(sprintf('LOWER(%s.%s) IN (:words_query)', $entityName, $fieldName));
-                $queryParameters[] = new Parameter('words_query', explode(' ', $lowerSearchQuery));
+                $queryParameters['words_query'] = explode(' ', $lowerSearchQuery);
             }
         }
 
         if (0 !== \count($queryParameters)) {
-            $queryBuilder->setParameters(new ArrayCollection($queryParameters));
+            foreach ($queryParameters as $paramKey => $paramValue) {
+                $queryBuilder->setParameter($paramKey, $paramValue);
+            }
         }
 
         if (!empty($dqlFilter)) {
