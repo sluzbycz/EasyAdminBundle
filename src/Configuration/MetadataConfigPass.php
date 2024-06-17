@@ -67,18 +67,18 @@ class MetadataConfigPass implements ConfigPassInterface
 
         // introspect regular entity fields
         foreach ($entityMetadata->fieldMappings as $fieldName => $fieldMetadata) {
-            $entityPropertiesMetadata[$fieldName] = $fieldMetadata;
+            $entityPropertiesMetadata[$fieldName] = (array) $fieldMetadata;
         }
 
         // introspect fields for entity associations
         foreach ($entityMetadata->associationMappings as $fieldName => $associationMetadata) {
-            $entityPropertiesMetadata[$fieldName] = array_merge($associationMetadata, [
+            $entityPropertiesMetadata[$fieldName] = array_merge($associationMetadata->toArray(), [
                 'type' => 'association',
-                'associationType' => $associationMetadata['type'],
+                'associationType' => $associationMetadata->type(),
             ]);
 
             // associations different from *-to-one cannot be sorted
-            if ($associationMetadata['type'] & ClassMetadata::TO_MANY) {
+            if ($associationMetadata->type() & ClassMetadata::TO_MANY) {
                 $entityPropertiesMetadata[$fieldName]['sortable'] = false;
             }
         }
