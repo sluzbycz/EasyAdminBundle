@@ -2,7 +2,8 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Form\Filter\Guesser;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMapping;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Filter\Type\ArrayFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Filter\Type\BooleanFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Filter\Type\ComparisonFilterType;
@@ -37,7 +38,7 @@ class DoctrineOrmFilterTypeGuesser extends DoctrineOrmTypeGuesser
             return null;
         }
 
-        /** @var ClassMetadataInfo $metadata */
+        /** @var ClassMetadata $metadata */
         [$metadata, $name] = $doctrineEntityMetadata;
 
         if ($metadata->hasAssociation($property)) {
@@ -45,7 +46,7 @@ class DoctrineOrmFilterTypeGuesser extends DoctrineOrmTypeGuesser
             $mapping = $metadata->getAssociationMapping($property);
             $options = ['value_type_options' => [
                 'em' => $name,
-                'class' => $mapping['targetEntity'],
+                'class' => $mapping->targetEntity,
                 'multiple' => $multiple,
                 'attr' => ['data-widget' => 'select2'],
             ]];
@@ -53,10 +54,10 @@ class DoctrineOrmFilterTypeGuesser extends DoctrineOrmTypeGuesser
             if ($metadata->isSingleValuedAssociation($property)) {
                 // don't show the 'empty value' placeholder when all join columns are required,
                 // because an empty filter value would always returns no result
-                $numberOfRequiredJoinColumns = \count(array_filter($mapping['joinColumns'], function (array $joinColumnMapping): bool {
-                    return false === ($joinColumnMapping['nullable'] ?? false);
+                $numberOfRequiredJoinColumns = \count(array_filter($mapping->joinColumns, function (JoinColumnMapping $joinColumnMapping): bool {
+                    return false === ($joinColumnMapping->nullable ?? false);
                 }));
-                $someJoinColumnsAreNullable = \count($mapping['joinColumns']) !== $numberOfRequiredJoinColumns;
+                $someJoinColumnsAreNullable = \count($mapping->joinColumns) !== $numberOfRequiredJoinColumns;
                 if ($someJoinColumnsAreNullable) {
                     $options['value_type_options']['placeholder'] = 'label.form.empty_value';
                 }

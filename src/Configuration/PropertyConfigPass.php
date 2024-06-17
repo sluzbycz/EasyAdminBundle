@@ -358,7 +358,7 @@ class PropertyConfigPass implements ConfigPassInterface
      * @param string $fieldType
      * @param array  $backendConfig
      *
-     * @return string The format that should be applied to the field value
+     * @return string|null The format that should be applied to the field value
      */
     private function getFieldFormat($fieldType, array $backendConfig)
     {
@@ -373,5 +373,7 @@ class PropertyConfigPass implements ConfigPassInterface
         if (\in_array($fieldType, ['bigint', 'integer', 'smallint', 'decimal', 'float'])) {
             return $backendConfig['formats']['number'] ?? null;
         }
+
+        return null;
     }
 }
