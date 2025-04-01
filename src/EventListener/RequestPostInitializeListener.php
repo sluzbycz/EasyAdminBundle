@@ -18,7 +18,7 @@ class RequestPostInitializeListener
     private $doctrine;
     private $requestStack;
 
-    public function __construct(ManagerRegistry $doctrine, RequestStack $requestStack = null)
+    public function __construct(ManagerRegistry $doctrine, ?RequestStack $requestStack = null)
     {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;

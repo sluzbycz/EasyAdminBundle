@@ -23,7 +23,7 @@ class DateTimeFilterType extends FilterType
 
     private $valueType;
 
-    public function __construct(string $valueType = null)
+    public function __construct(?string $valueType = null)
     {
         $this->valueType = $valueType ?: DateTimeType::class;
     }

@@ -16,7 +16,7 @@ class TextFilterType extends AbstractType
 {
     private $valueType;
 
-    public function __construct(string $valueType = null)
+    public function __construct(?string $valueType = null)
     {
         $this->valueType = $valueType ?: TextType::class;
     }

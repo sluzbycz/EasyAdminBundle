@@ -42,7 +42,7 @@ class EasyAdminDataCollector extends DataCollector
     /**
      * {@inheritdoc}
      */
-    public function collect(Request $request, Response $response, \Throwable $exception = null): void
+    public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
     {
         if ('easyadmin' !== $request->attributes->get('_route')) {
             return;

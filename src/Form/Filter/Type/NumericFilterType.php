@@ -22,7 +22,7 @@ class NumericFilterType extends FilterType
     private $valueType;
     private $valueTypeOptions;
 
-    public function __construct(string $valueType = null, array $valueTypeOptions = [])
+    public function __construct(?string $valueType = null, array $valueTypeOptions = [])
     {
         $this->valueType = $valueType ?: NumberType::class;
         $this->valueTypeOptions = $valueTypeOptions;

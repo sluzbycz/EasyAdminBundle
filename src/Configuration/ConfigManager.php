@@ -36,7 +36,7 @@ final class ConfigManager
         $this->configPasses[] = $configPass;
     }
 
-    public function getBackendConfig(string $propertyPath = null)
+    public function getBackendConfig(?string $propertyPath = null)
     {
         $this->loadBackendConfig();
 

@@ -18,7 +18,7 @@ class EasyAdminExtension extends AbstractTypeExtension
 {
     private $requestStack;
 
-    public function __construct(RequestStack $requestStack = null)
+    public function __construct(?RequestStack $requestStack = null)
     {
         $this->requestStack = $requestStack;
     }
