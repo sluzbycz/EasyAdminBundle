@@ -1,3 +1,7 @@
+{% if field_options.enumType is not null %}
+    {% set value = value.value %}
+{% endif %}
+
 {% if field_options.format %}
     {{ field_options.format|format(value) }}
 {% else %}
