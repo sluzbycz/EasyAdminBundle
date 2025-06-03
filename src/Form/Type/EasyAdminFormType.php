@@ -111,6 +111,16 @@ class EasyAdminFormType extends AbstractType
                 $formFieldOptions['required'] = false;
             }
 
+            if (in_array($metadata['fieldType'], ['datetime', 'datetime_immutable'])) {
+                if (!isset($formFieldOptions['widget'], $formFieldOptions['date_widget'], $formFieldOptions['time_widget'])) {
+                    $formFieldOptions['widget'] = 'single_text';
+                }
+            } elseif (in_array($metadata['fieldType'], ['date', 'date_immutable'])) {
+                if (!isset($formFieldOptions['widget'])) {
+                    $formFieldOptions['widget'] = 'single_text';
+                }
+            }
+
             $formField = $builder->getFormFactory()->createNamedBuilder($name, $formFieldType, null, $formFieldOptions);
             $formField->setAttribute('easyadmin_form_tab', $currentFormTab);
             $formField->setAttribute('easyadmin_form_group', $currentFormGroup);
