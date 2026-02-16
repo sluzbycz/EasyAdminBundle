@@ -471,12 +471,12 @@ trait AdminControllerTrait
         $filtersForm->handleRequest($this->request);
 
         $easyadmin = $this->request->attributes->get('easyadmin');
-        $easyadmin['filters']['applied'] = array_keys($this->request->get('filters', []));
+        $easyadmin['filters']['applied'] = array_keys($this->request->query->all('filters'));
         $this->request->attributes->set('easyadmin', $easyadmin);
 
         $parameters = [
             'filters_form' => $filtersForm->createView(),
-            'referer_action' => $this->request->get('referer_action', 'list'),
+            'referer_action' => $this->request->query->get('referer_action', 'list'),
         ];
 
         return $this->executeDynamicMethod('render<EntityName>Template', ['filters', $this->entity['templates']['filters'], $parameters]);
@@ -487,7 +487,7 @@ trait AdminControllerTrait
      */
     protected function filterQueryBuilder(QueryBuilder $queryBuilder): void
     {
-        if (!$requestData = $this->request->get('filters')) {
+        if (!$requestData = $this->request->query->all('filters')) {
             // Don't create the filters form if there is no filter applied
             return;
         }
