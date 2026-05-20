@@ -21,7 +21,7 @@ class AuthorizationChecker implements AuthorizationCheckerInterface
         $this->authorizationChecker = $authorizationChecker;
     }
 
-    public function isGranted($attributes, $subject = null, ?AccessDecision $accessDecision = null): bool
+    public function isGranted(mixed $attributes, mixed $subject = null, ?AccessDecision $accessDecision = null): bool
     {
         // this check is needed for performance reasons because most of the times permissions
         // won't be set, so this function must return as early as possible in those cases
@@ -31,11 +31,11 @@ class AuthorizationChecker implements AuthorizationCheckerInterface
 
         try {
             if (!\is_array($attributes)) {
-                return $this->authorizationChecker->isGranted($attributes, $subject);
+                return $this->authorizationChecker->isGranted($attributes, $subject, $accessDecision);
             }
 
             foreach ($attributes as $attribute) {
-                if ($this->authorizationChecker->isGranted($attribute, $subject)) {
+                if ($this->authorizationChecker->isGranted($attribute, $subject, $accessDecision)) {
                     return true;
                 }
             }
