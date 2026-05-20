@@ -357,6 +357,16 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+
+                ->arrayNode('delete')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('item_permission')
+                            ->defaultNull()
+                            ->info('The permission or array of permissions that the user must have to see the item')
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
     }
