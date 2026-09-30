@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder as DoctrineQueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
@@ -53,7 +54,7 @@ class QueryBuilder
         }
 
         if (null !== $sortField) {
-            $queryBuilder->orderBy(sprintf('%s%s', $isSortedByDoctrineAssociation ? '' : 'entity.', $sortField), $sortDirection);
+            $queryBuilder->orderBy(sprintf('%s%s', $isSortedByDoctrineAssociation ? '' : 'entity.', $sortField), $this->normalizeSortDirection($sortDirection));
         }
 
         return $queryBuilder;
@@ -159,7 +160,7 @@ class QueryBuilder
         }
 
         if (null !== $sortField) {
-            $queryBuilder->orderBy(sprintf('%s%s', $isSortedByDoctrineAssociation ? '' : 'entity.', $sortField), $sortDirection ?: 'DESC');
+            $queryBuilder->orderBy(sprintf('%s%s', $isSortedByDoctrineAssociation ? '' : 'entity.', $sortField), $this->normalizeSortDirection($sortDirection ?: 'DESC'));
         }
 
         return $queryBuilder;
@@ -184,5 +185,18 @@ class QueryBuilder
         $fieldNameParts = explode('.', $fieldName);
 
         return false !== strpos($fieldName, '.') && !\array_key_exists($fieldNameParts[0], $classMetadata->embeddedClasses);
+    }
+
+    protected function normalizeSortDirection(\SortDirection|string|null $direction): ?\SortDirection
+    {
+        if (null === $direction || $direction instanceof \SortDirection) {
+            return $direction;
+        }
+
+        return match (strtoupper($direction)) {
+            'ASC' => \SortDirection::Ascending,
+            'DESC' => \SortDirection::Descending,
+            default => throw new \InvalidArgumentException(sprintf('Invalid sort direction "%s".', $direction)),
+        };
     }
 }
