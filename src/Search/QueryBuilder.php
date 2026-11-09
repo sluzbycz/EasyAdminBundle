@@ -88,6 +88,7 @@ class QueryBuilder
         $isSearchQuerySmallInteger = ctype_digit($searchQuery) && $searchQuery >= -32768 && $searchQuery <= 32767;
         $isSearchQueryInteger = ctype_digit($searchQuery) && $searchQuery >= -2147483648 && $searchQuery <= 2147483647;
         $isSearchQueryUuid = 1 === preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $searchQuery);
+        $isSearchQueryAscii = 0 === preg_match('/[^\x00-\x7F]/', $searchQuery);
         $lowerSearchQuery = mb_strtolower($searchQuery);
 
         $queryParameters = [];
@@ -118,6 +119,7 @@ class QueryBuilder
             // 'citext' is a PostgreSQL extension (https://github.com/EasyCorp/EasyAdminBundle/issues/2556)
             $isTextField = \in_array($metadata['dataType'], ['string', 'text', 'citext', 'array', 'simple_array']);
             $isGuidField = \in_array($metadata['dataType'], ['guid', 'uuid']);
+            $isAsciiTextField = 'ascii_string' === $metadata['dataType'];
 
             // this complex condition is needed to avoid issues on PostgreSQL databases
             if (
@@ -132,6 +134,12 @@ class QueryBuilder
                 $queryBuilder->orWhere(sprintf('%s.%s = :uuid_query', $entityName, $fieldName));
                 $queryParameters['uuid_query'] = $searchQuery;
             } elseif ($isTextField) {
+                $queryBuilder->orWhere(sprintf('LOWER(%s.%s) LIKE :fuzzy_query', $entityName, $fieldName));
+                $queryParameters['fuzzy_query'] = '%'.$lowerSearchQuery.'%';
+
+                $queryBuilder->orWhere(sprintf('LOWER(%s.%s) IN (:words_query)', $entityName, $fieldName));
+                $queryParameters['words_query'] = explode(' ', $lowerSearchQuery);
+            } elseif ($isAsciiTextField && $isSearchQueryAscii) {
                 $queryBuilder->orWhere(sprintf('LOWER(%s.%s) LIKE :fuzzy_query', $entityName, $fieldName));
                 $queryParameters['fuzzy_query'] = '%'.$lowerSearchQuery.'%';
 

@@ -53,6 +53,7 @@ class TemplateConfigPass implements ConfigPassInterface
         'field_simple_array' => '@EasyAdmin/default/field_simple_array.html.twig',
         'field_smallint' => '@EasyAdmin/default/field_smallint.html.twig',
         'field_string' => '@EasyAdmin/default/field_string.html.twig',
+        'field_ascii_string' => '@EasyAdmin/default/field_string.html.twig',
         'field_tel' => '@EasyAdmin/default/field_tel.html.twig',
         'field_text' => '@EasyAdmin/default/field_text.html.twig',
         'field_time' => '@EasyAdmin/default/field_time.html.twig',

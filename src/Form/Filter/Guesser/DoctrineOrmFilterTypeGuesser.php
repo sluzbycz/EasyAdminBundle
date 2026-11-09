@@ -114,6 +114,7 @@ class DoctrineOrmFilterTypeGuesser extends DoctrineOrmTypeGuesser
 
             case 'guid':
             case 'string':
+            case 'ascii_string':
                 return new TypeGuess(TextFilterType::class, self::$defaultOptions + [], Guess::MEDIUM_CONFIDENCE);
 
             case 'blob':
