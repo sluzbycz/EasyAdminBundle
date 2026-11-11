@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Common features needed in admin controllers.
@@ -83,7 +83,17 @@ trait AdminControllerTrait
             }
         }
 
-        return $this->executeDynamicMethod($action.'<EntityName>Action');
+        $badMethodCallExceptionCode = 404;
+
+        try {
+            return $this->executeDynamicMethod($action.'<EntityName>Action', [], $badMethodCallExceptionCode);
+        } catch (\BadMethodCallException $e) {
+            if ($e->getCode() === $badMethodCallExceptionCode) {
+                throw $this->createNotFoundException(sprintf('Action "%s" not found.', $action), $e);
+            }
+
+            throw $e;
+        }
     }
 
     /**
@@ -897,7 +907,7 @@ trait AdminControllerTrait
      *
      * @return mixed
      */
-    protected function executeDynamicMethod($methodNamePattern, array $arguments = [])
+    protected function executeDynamicMethod($methodNamePattern, array $arguments = [], int $badMethodCallExceptionCode = 0)
     {
         $methodName = str_replace('<EntityName>', $this->entity['name'], $methodNamePattern);
 
@@ -906,7 +916,7 @@ trait AdminControllerTrait
         }
 
         if (!method_exists($this, $methodName)) {
-            throw new \BadMethodCallException(sprintf('The "%s()" method does not exist in the %s class', $methodName, static::class));
+            throw new \BadMethodCallException(sprintf('The "%s()" method does not exist in the %s class', $methodName, static::class), $badMethodCallExceptionCode);
         }
 
         return \call_user_func_array([$this, $methodName], $arguments);
